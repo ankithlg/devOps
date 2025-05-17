@@ -1,44 +1,29 @@
 pipeline {
     agent any
 
-    environment {
-        // Set your Git repo URL and Jenkins credentials ID here
-        GIT_REPO = 'https://github.com/ankithlg/devOps.git'
-        GIT_CREDENTIALS_ID = 'github-token'
-    }
-
     stages {
-        stage('Checkout') {
+        stage('Clone Repo') {
             steps {
-                git credentialsId: "${GIT_CREDENTIALS_ID}", url: "${GIT_REPO}"
+                  git url: 'https://github.com/ankithlg/devOps.git', credentialsId: 'github-token' 
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                bat 'npm install'
             }
         }
 
-        stage('Build') {
+        stage('Build React App') {
             steps {
-                sh 'npm run build'
+                bat 'npm run build'
             }
         }
 
-        stage('Archive Build') {
+        stage('Deploy Locally') {
             steps {
-                archiveArtifacts artifacts: 'build/**', fingerprint: true
+                bat 'deploy.bat'
             }
-        }
-    }
-
-    post {
-        failure {
-            echo 'Build failed!'
-        }
-        success {
-            echo 'Build completed successfully!'
         }
     }
 }
